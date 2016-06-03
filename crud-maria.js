@@ -28,7 +28,7 @@ function createUser(username, firstName, lastName, email, password) {
     })
     .then(function(rows) {
         logRow(rows[0]);
-        return conn.queryAsync('update stories set votes = votes+1 where id = ?', [id])
+        return conn.queryAsync('update Users set currency = currency+1 where id = ?', [id])
     })
     .then(function(results) {
         console.log('%d rows affected', results.affectedRows);
@@ -46,4 +46,4 @@ function createUser(username, firstName, lastName, email, password) {
     });
 }
 
-createUser('linneakw', 'linnea', 'Watson', 'linnea_watsonhotmail.com', 'password');
+//createUser('linneakw', 'linnea', 'Watson', 'linnea_watsonhotmail.com', 'password');

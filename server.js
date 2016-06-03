@@ -17,9 +17,11 @@ var finalApi = require('./controllers/final-api');
 var User = require('./models/user.js').Model(connPool);
 
 var app = express();
+app.set('view engine', 'ejs');
+
 
 var ghConfig = require('./secret/oauth-github.json');
-ghConfig.callbackURL = 'http://localhost:8000/signin/github/callback';
+ghConfig.callbackURL = '/signin/github/callback';
 
 var ghStrategy = new GitHubStrategy(ghConfig, 
     function(accessToken, refreshToken, profile, done) {
@@ -69,60 +71,35 @@ passport.deserializeUser(function(user, done) {
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/signin/github', passport.authenticate('github'));
-app.get('/signin/github/callback', passport.authenticate('github'), 
-    function(req, res) {
-        res.redirect('/secure.html');
-    });
+require('./app/routes.js')(app, passport);
     
-app.get('/signout', function(req, res) {
-    req.logout();
-    res.redirect('/');
-});
-
-app.use(express.static(__dirname + '/static/public'));
-
-app.use(express.static(__dirname + '/static/secure'), 
-    function(req, res, next) {
-        //req.isAuthenticated()
-        if (req.isAuthenticated()) {
-            next();
-        } else {
-            // notify the user they're not allowed to access
-        }
-    });
-
-app.use('/api/v1', finalApi.Router(User));
-
-app.use(function (req, res, next) {
-   console.log('%s %s', req.method, req.url);
-   next(); 
-});
-
-app.use(express.static(__dirname + '/static'));
-
-app.get('/', function(req, res) {
-    res.setHeader('Content-Type', 'text/plain');
-    res.send('Hello World!');
-})
-
-app.get('/api/v1/users', function(req, res) {
-   var users = [
-       {
-           email: 'test@test.com',
-           displayName: 'Test User'
-       }
-   ];
-   
-   res.json(users);
-});
-
-app.post('/api/v1/users', function(req, res) {
-    console.log(req.body);
-    res.json({message: 'new user created'});
-});
+app.set('views', __dirname + '/static/views');
 
 
 app.listen(80, function() {
-    console.log("server is listening");
-})
+        console.log("server is listening");
+    });
+    
+    // API ROUTES
+    app.use('/api/v1', finalApi.Router(User));
+
+    app.use(function (req, res, next) {
+    console.log('%s %s', req.method, req.url);
+    next(); 
+    });
+
+    app.get('/api/v1/users', function(req, res) {
+    var users = [
+        {
+            email: 'test@test.com',
+            displayName: 'Test User'
+        }
+    ];
+    
+    res.json(users);
+    });
+
+    app.post('/api/v1/users', function(req, res) {
+        console.log(req.body);
+        res.json({message: 'new user created'});
+    });
