@@ -9,6 +9,8 @@ var passport = require('passport');
 var GitHubStrategy = require('passport-github').Strategy;
 var bluebird = require('bluebird');
 var mysql = require('mysql');
+var flash = require('connect-flash');
+require('./config/passport')(passport);
 var dbConfig = require('./secret/config-maria.json');
 var connPool = bluebird.promisifyAll(mysql.createPool(dbConfig));
 
@@ -17,6 +19,8 @@ var finalApi = require('./controllers/final-api');
 var User = require('./models/user.js').Model(connPool);
 
 var app = express();
+
+app.use(flash());
 app.set('view engine', 'ejs');
 
 

@@ -9,7 +9,6 @@ create table Users (
     id int not null primary key auto_increment,
     FirstName varchar(100) not null,    
     LastName varchar(100) not null,
-    UserName varchar(20) not null,
     Email varchar(200) not null,
     PassSalt varchar(50) not null,
     PassHash varchar(50) not null

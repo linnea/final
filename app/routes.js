@@ -16,13 +16,19 @@ module.exports = function(app, passport) {
     
     // LOG IN
     app.get('/login', function(req, res) {
-        res.render('login.ejs');
-    });    
+        res.render('login.ejs', { message: req.flash('loginMessage') }); 
+    });  
     
     // SIGN UP
     app.get('/signup', function(req, res) {
-        res.render('signup.ejs');
+        res.render('signup.ejs', { message: req.flash('signupMessage') });
     });
+    
+    app.post('/signup', passport.authenticate('local-signup', {
+        successRedirect : '/profile',
+        failureRedirect : '/signup',
+        failureFlash : true
+    }));
     
     // PROFILE
     app.get('/profile', isLoggedIn, function(req, res) {

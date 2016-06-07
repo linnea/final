@@ -4,7 +4,7 @@ var mysql = require('mysql');
 var bluebird = require('bluebird');
 // load connection info
 var dbConfig = require('./secret/config-maria.json');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt-nodejs');
 
 
 var conn = bluebird.promisifyAll(mysql.createConnection(dbConfig));
@@ -46,4 +46,4 @@ function createUser(username, firstName, lastName, email, password) {
     });
 }
 
-//createUser('linneakw', 'linnea', 'Watson', 'linnea_watsonhotmail.com', 'password');
+createUser('linneakw', 'linnea', 'Watson', 'linnea_watsonhotmail.com', 'password');
