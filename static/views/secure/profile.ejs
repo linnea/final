@@ -20,6 +20,8 @@
             <h1>Welcome <%= locals.user.displayName || (locals.user.FirstName + ' '+ locals.user.LastName) %> </h1>
             <a href="/logout" class="btn btn-primary" role="button">Log out</a>
             <a href="/profile/complete" class="btn btn-primary" role="button">Complete Profile</a>
+            <br /><br />
+            <p><img src=<%= locals.user.Gravatar%>></p>
         </div>
     </div>
 </body>

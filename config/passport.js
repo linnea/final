@@ -88,7 +88,6 @@ module.exports = function(app, passport, connection, users) {
         store: new RedisStore(),
         host: 'ec2-52-40-242-0.us-west-2.compute.amazonaws.com'
     }));
-
     app.use(passport.initialize());
     app.use(passport.session());
 }

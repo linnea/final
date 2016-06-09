@@ -2,12 +2,7 @@ module.exports = function(app, passport) {
     // tutorial referenced 
     // https://scotch.io/tutorials/easy-node-authentication-setup-and-local
     var express = require('express');
-    
-    /*
-    // public files
-    app.use(express.static(__dirname + '/static/public'));
-    app.use(express.static(__dirname + '/static/secure')); 
-    */
+
     // HOME PAGE
     app.get('/', function(req, res) {
         res.render('index.ejs');
@@ -52,19 +47,12 @@ module.exports = function(app, passport) {
     app.get('/signin/github', passport.authenticate('github'));
     app.get('/signin/github/callback', passport.authenticate('github'), 
         function(req, res) {
-            res.redirect('/profile');
+            res.redirect('/profile', {
+                user: req.user
+            });
         });
-    // private access
-    /*
-    app.use(function(req, res, next) {
-            //req.isAuthenticated()
-            if (req.isAuthenticated()) {
-                next();
-            } else {
-                // notify the user they're not allowed to access
-            }
-        });
-        */
+        
+        
     function isLoggedIn(req, res, next) {
         // if user is authenticated in the session, carry on 
         console.log(req.isAuthenticated());

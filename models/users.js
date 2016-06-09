@@ -1,5 +1,5 @@
 'use strict';
-
+var md5 = require('js-md5');
 var bcrypt = require('bcrypt-nodejs');
 
 // getting users
@@ -67,11 +67,11 @@ var User = {
                 }
             }).then(function(result) {
                 console.log("inserting...");
-                var sql = 'insert into Users (Email, FirstName, LastName, displayName, PassHash) values (?, ?, ?, ?, ?)';
-        
+                var sql = 'insert into Users (Email, FirstName, LastName, displayName, PassHash, Gravatar) values (?, ?, ?, ?, ?, ?)';
+                var grav = 'https://www.gravatar.com/avatar/' + md5(user.email.toLowerCase().trim());
                 var hash = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10));
                 
-                var params = [user.email, user.firstName, user.lastName, user.firstName + ' ' + user.lastName, hash];
+                var params = [user.email, user.firstName, user.lastName, user.firstName + ' ' + user.lastName, hash, grav];
         
                 return connPool.queryAsync(sql, params)
                     .then(function(results) {
