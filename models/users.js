@@ -36,11 +36,11 @@ var User = {
     },
     insert(user) {
         // VALIDATE HERE 
-        var sql = 'insert into Users (Email, PassHash) values (?, ?)';
+        var sql = 'insert into Users (Email, FirstName, LastName, PassHash) values (?, ?)';
         
         var hash = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10));
         
-        var params = [user.email, hash];
+        var params = [user.email, user.firstName, user.lastName, hash];
   
         return connPool.queryAsync(sql, params)
             .then(function(results) {

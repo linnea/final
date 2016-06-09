@@ -8,13 +8,20 @@ angular.module('final', [])
                 $scope.users = response.data;
             });            
         */
+        
+        $scope.activeStatus = "hidden";
         $scope.saveUser = function() {
-            $http.post(apiRoot + '/users', $scope.newUser)
+            if($scope.newUser.password == $scope.newUser.password2) {
+                $http.post(apiRoot + '/users', $scope.newUser)
                 .then(function(response) {
                     console.log(" res data", response.data);
                     window.location = '/profile';
                     // redirect the user and do all the session storing
                 });
+            } else {
+                $scope.activeStatus = "show";
+            }
+            
                 // .catch ?
         };
         
