@@ -4,12 +4,15 @@
     <title>Node Authentication</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+   
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.1/angular.min.js"></script>
+    <script type="text/javascript" src="js/signup.js"></script>
     <style>
         body        { padding-top:80px; }
     </style>
 </head>
 <body>
-<div class="container">
+<div class="container" ng-app="final" ng-controller="UsersController">
 
 <div class="col-sm-6 col-sm-offset-3">
 
@@ -17,14 +20,14 @@
 
 
     <!-- LOGIN FORM -->
-    <form action="/signup" method="post">
+    <form name="newUserForm" ng-submit="newUserForm.$valid && saveUser()" novalidate>
         <div class="form-group">
             <label>Email</label>
-            <input type="text" class="form-control" name="email">
+            <input type="text" class="form-control" name="email" ng-model="newUser.email" required>
         </div>
         <div class="form-group">
             <label>Password</label>
-            <input type="password" class="form-control" name="password">
+            <input type="password" class="form-control" name="password" ng-model="newUser.password" required>
         </div>
 
         <button type="submit" class="btn btn-warning btn-lg">Signup</button>

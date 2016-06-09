@@ -45,5 +45,3 @@ function createUser(username, firstName, lastName, email, password) {
         conn.end();
     });
 }
-
-createUser('linneakw', 'linnea', 'Watson', 'linnea_watsonhotmail.com', 'password');

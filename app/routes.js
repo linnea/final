@@ -1,4 +1,3 @@
-
 module.exports = function(app, passport) {
     // tutorial referenced 
     // https://scotch.io/tutorials/easy-node-authentication-setup-and-local
@@ -16,12 +15,18 @@ module.exports = function(app, passport) {
     
     // LOG IN
     app.get('/login', function(req, res) {
-        res.render('login.ejs', { message: req.flash('loginMessage') }); 
+        res.render('login.ejs');
     });  
+    /*
+    app.post('/login', passport.authenticate('local-login'), function(req, res) {
+        res.redirect('/profile', {
+            user: req.user
+        });
+    });*/
     
     // SIGN UP
     app.get('/signup', function(req, res) {
-        res.render('signup.ejs', { message: req.flash('signupMessage') });
+        res.render('signup.ejs');
     });
     
     app.post('/signup', passport.authenticate('local-signup', {
@@ -30,12 +35,6 @@ module.exports = function(app, passport) {
         failureFlash : true
     }));
     
-    // PROFILE
-    app.get('/profile', isLoggedIn, function(req, res) {
-        res.render('profile.ejs', {
-            user: req.user
-        });
-    });
     
     // LOGOUT
     app.get('/logout', function(req, res) {
@@ -47,11 +46,8 @@ module.exports = function(app, passport) {
     app.get('/signin/github', passport.authenticate('github'));
     app.get('/signin/github/callback', passport.authenticate('github'), 
         function(req, res) {
-            res.redirect('/secure.html');
+            res.redirect('/profile');
         });
-        
-  
-    
     // private access
     /*
     app.use(function(req, res, next) {
@@ -65,12 +61,22 @@ module.exports = function(app, passport) {
         */
     function isLoggedIn(req, res, next) {
         // if user is authenticated in the session, carry on 
+        console.log(req.isAuthenticated());
         if (req.isAuthenticated()) {
             return next();
         }
         res.redirect('/');
-       
     }
     
+    // HOW TO SERVE SECURE FILES AFTER THIS POINT
+    app.use(isLoggedIn);
+    app.use(express.static(__dirname + '/static/views/secure'));
+
+    // PROFILE
+    app.get('/profile', function(req, res) {
+        res.render('secure/profile.ejs', {
+            user: req.user
+        });
+    });
     
 }

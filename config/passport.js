@@ -1,64 +1,97 @@
+var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
+
 var LocalStrategy = require('passport-local').Strategy;
 
-// load up the user model
-var User = require('../models/user');
+module.exports = function(app, passport, connection, users) {
+    // set cookie
+    var cookieSigSecret = process.env.COOKIE_SIG_SECRET;
+    if(!cookieSigSecret) {
+        console.error('Please set COOKIE_SIG_SECRET');
+        process.exit(1);
+    }
 
-module.exports = function(passport) {
+    // serialization and deserialization
     passport.serializeUser(function(user, done) {
-        done(null, user.id);
+        // after user authenticated by strategy
+        // before writes user to session store
+        // only once after authentication
+        
+        // SHOULD only serialize user id, not the entire user
+    
+    
+        done(null, user); 
     });
 
-    // used to deserialize the user
-    passport.deserializeUser(function(id, done) {
-        User.findById(id, function(err, user) {
-            done(err, user);
-        });
+    // called at every request to server
+    passport.deserializeUser(function(user, done) {
+        done(null, user); 
     });
-    
-    
-    // local sign up
-    passport.use('local-signup', new LocalStrategy({
-        // by default, local strategy uses username and password, we will override with email
+
+
+    // set session
+    app.use(session({
+        secret: cookieSigSecret,
+        resave: false,
+        saveUninitialized: false
+        //store: new RedisStore()
+        //{host: 'ec2-52-40-242-0.us-west-2.compute.amazonaws.com'}
+    }));
+
+    ///////////////////////
+    // LOCAL STRATEGY /////
+    ///////////////////////
+    passport.use('local-login', new LocalStrategy({
         usernameField : 'email',
         passwordField : 'password',
-        passReqToCallback : true // allows us to pass back the entire request to the callback
+        passReqToCallback : true 
     },
     function(req, email, password, done) {
         process.nextTick(function() {
-
-        // find a user whose email is the same as the forms email
-        // we are checking to see if the user trying to login already exists
-        User.findEmail(email, password,  function(err, user) {
-            // if there are any errors, return the error
-            if (err)
-                return done(err);
-
-            // check to see if theres already a user with that email
-            if (user) {
-                return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
-            } else {
-
-                // if there is no user with that email
-                // create the user
-                var newUser = new User();
-
-                // set the user's local credentials
-                newUser.local.email = email;
-                newUser.local.password = newUser.generateHash(password);
+            // find a user whose email is the same as the forms email
+            // we are checking to see if the user trying to login already exists
+            
+            var user = {
+                email: email,
+                password: password
+            };
+            users.findUser(user).done(function(res) {
+                if (res.email) {
+                    return done(null, user);
+                } else {
+                    return new Error('user not found');
+                }
                 
-                console.log(newUser);
+            });
+        })
+    }
+));
+ 
 
-                // save the user
-                newUser.save(function(err) {
-                    if (err)
-                        throw err;
-                    return done(null, newUser);
-                });
-            }
+    ///////////////////////
+    // GITHUB STRATEGY ////
+    ///////////////////////
+    var GitHubStrategy = require('passport-github').Strategy;
 
-        });    
+    var ghConfig = require('../secret/oauth-github.json');
+    ghConfig.callbackURL = '/signin/github/callback';
 
+    var ghStrategy = new GitHubStrategy(ghConfig, 
+        function(accessToken, refreshToken, profile, done) {
+            console.log('Authentication Successful!');
+            console.dir(profile);
+            
+            // create user and insert information
+            // into memberships profile
+            done(null, profile);
         });
+        
+    passport.use(ghStrategy);
 
-    }));
-};
+
+    ///////////////////////////////
+    /// INITIALIZE & SET SESSION //
+    ///////////////////////////////
+    app.use(passport.initialize());
+    app.use(passport.session());
+}
