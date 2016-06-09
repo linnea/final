@@ -16,19 +16,39 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.1/angular.min.js"></script>
     <script type="text/javascript" src="js/login.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <style>
+        body        { padding-top:80px; }
+        .hidden {
+            display: none;
+        }
+
+        .show {
+        display: block;
+        }
+        
+        form.ng-submitted .ng-invalid
+        {
+            border:1px solid #f00;
+        }
+        
+        .profile {
+            text-align: center;
+            margin: 0 auto;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-   
+  
     <div class="container" ng-app="final" ng-controller="LoginController">
         <div class="row">
             <div class="col-sm-6 col-sm-offset-3">
 
             <h1><span class="fa fa-sign-in"></span> Login</h1>
 
-
-
             <!-- LOGIN FORM -->
-            <form name="loginForm" ng-submit="loginForm.$valid && loginUser()" novalidate>
+            <form name="loginForm" ng-submit="loginForm.$valid && loginUser()" novalidate ng-show="{{!loggedIn}}">
                 <div class="form-group">
                     <label>Email</label>
                     <input type="text" class="form-control" name="email" ng-model="user.email" required>
@@ -37,10 +57,15 @@
                     <label>Password</label>
                     <input type="password" class="form-control" name="password" ng-model="user.password" required>
                 </div>
-
+                <div class="{{activeStatus}} alert alert-danger">Invalid credentials</div>
+                <br />
                 <button type="submit" class="btn btn-warning btn-lg">Login</button>
+                
             </form>
-
+            <div class="row profile" ng-show="{{loggedIn}}">
+                <h1>You're logged in!</h1>
+                <a class="btn btn-success" href="/profile">Continue to Profile</a>
+            </div>
             <hr>
 
             <p>Need an account? <a href="/signup">Signup</a></p>

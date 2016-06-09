@@ -28,16 +28,6 @@ module.exports = function(app, passport, connection, users) {
         done(null, user); 
     });
 
-
-    // set session
-    app.use(session({
-        secret: cookieSigSecret,
-        resave: false,
-        saveUninitialized: false
-        //store: new RedisStore()
-        //{host: 'ec2-52-40-242-0.us-west-2.compute.amazonaws.com'}
-    }));
-
     ///////////////////////
     // LOCAL STRATEGY /////
     ///////////////////////
@@ -53,15 +43,14 @@ module.exports = function(app, passport, connection, users) {
             
             var user = {
                 email: email,
-                password: password
+                password: password,
             };
-            users.findUser(user).done(function(res) {
-                if (res.email) {
+            users.findUser(user, true).done(function(res) {
+                if (res && res.email) {
                     return done(null, user);
                 } else {
-                    return new Error('user not found');
-                }
-                
+                    return done(res, null);
+                }    
             });
         })
     }
@@ -80,7 +69,6 @@ module.exports = function(app, passport, connection, users) {
         function(accessToken, refreshToken, profile, done) {
             console.log('Authentication Successful!');
             console.dir(profile);
-            
             // create user and insert information
             // into memberships profile
             done(null, profile);
@@ -92,6 +80,15 @@ module.exports = function(app, passport, connection, users) {
     ///////////////////////////////
     /// INITIALIZE & SET SESSION //
     ///////////////////////////////
+        // set session
+    app.use(session({
+        secret: cookieSigSecret,
+        resave: false,
+        saveUninitialized: false,
+        store: new RedisStore(),
+        host: 'ec2-52-40-242-0.us-west-2.compute.amazonaws.com'
+    }));
+
     app.use(passport.initialize());
     app.use(passport.session());
 }

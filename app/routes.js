@@ -15,14 +15,20 @@ module.exports = function(app, passport) {
     
     // LOG IN
     app.get('/login', function(req, res) {
-        res.render('login.ejs');
+        if (req.isAuthenticated()) {
+            res.redirect('/profile', {
+                user: req.user
+            });
+        } else {
+            res.render('login.ejs');
+        }
     });  
-    /*
-    app.post('/login', passport.authenticate('local-login'), function(req, res) {
-        res.redirect('/profile', {
-            user: req.user
-        });
-    });*/
+    
+    // LOG OUT
+    app.get('/logout', function(req, res) {
+        req.logout();
+        res.redirect('/');
+    });
     
     // SIGN UP
     app.get('/signup', function(req, res) {
@@ -79,4 +85,9 @@ module.exports = function(app, passport) {
         });
     });
     
+    app.get('/profile/complete', function(req, res) {
+        res.render('secure/complete.ejs', {
+            user: req.user
+        });
+    });
 }

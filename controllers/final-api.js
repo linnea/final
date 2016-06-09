@@ -22,11 +22,10 @@ module.exports.Router = function(users) {
     
     //GET /stories
     router.post('/users/login', passport.authenticate('local-login', {
-        successRedirect : '/profile',
-        failureRedirect : '/login'
+        successRedirect : '/profile'
     }));
     
-    //POST /stories
+    //POST new user
     router.post('/users', function(req, res, next) {
         //insert a new story into the database
         //and return the data with default values

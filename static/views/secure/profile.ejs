@@ -17,7 +17,9 @@
 <body>
     <div class="container">
         <div class="row">
-            <h1>Welcome <%= user.FirstName + ' ' + user.LastName %> </h1>
+            <h1>Welcome <%= locals.user.displayName || (locals.user.FirstName + ' '+ locals.user.LastName) %> </h1>
+            <a href="/logout" class="btn btn-primary" role="button">Log out</a>
+            <a href="/profile/complete" class="btn btn-primary" role="button">Complete Profile</a>
         </div>
     </div>
 </body>

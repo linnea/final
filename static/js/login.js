@@ -3,11 +3,18 @@ angular.module('final', [])
     .controller('LoginController', function($scope, $http, apiRoot) {       
         $scope.user = {};
         
+        $scope.activeStatus = "hidden";
+        $scope.loggedIn = false;
+        
         $scope.loginUser = function() {
-            $http.post(apiRoot + '/users/login', $scope.user)
-                .then(function(response) {
-                    window.location = '/profile';
+            $http.post(apiRoot + '/users/login',$scope.user)
+                .then(function (res) {
+                    $scope.loggedIn = true;
+                    
                     // redirect the user and do all the session storing
+                    window.location = '/profile';
+                }).catch(function() {
+                    $scope.activeStatus = "show";
                 });
                 // .catch login errors here and display them
         };
